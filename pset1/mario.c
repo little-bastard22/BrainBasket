@@ -1,5 +1,5 @@
-#include "stdio.h"
-#include "cs50.h"
+#include <stdio.h>
+#include <cs50.h>
 
 
 // height = height of pyramid = width of half pyramid without middle space
