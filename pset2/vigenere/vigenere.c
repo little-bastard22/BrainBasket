@@ -3,6 +3,8 @@
 #include <string.h>
 #include <ctype.h>
 
+
+//declarations
 string plaintext;
 string keyword;
 int k_ctr;
@@ -74,7 +76,7 @@ int main (int argc, string argv[])
     //inputs
     printf("plaintext: ");
     plaintext = get_string();
-    string ciphertext = plaintext; //creates string of correct length
+    string ciphertext = plaintext; //inits string of correct length
     keyword = argv[1];
     
     k_ctr = 0; //control for wrapping the keyword
@@ -102,7 +104,6 @@ int main (int argc, string argv[])
             //wraps around keyword chars
             if (k_ctr == strlen(keyword) - 1 )
                 {
-                    
                     k_ctr = 0;
                 }
             else
