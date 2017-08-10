@@ -1,0 +1,12 @@
+1.  It's a header file that includes typedefs of integer types, such as uint8_t used in bmp.h.
+2.  They provide the correct size for pointers and/or structs. (Number of bytes that could be accessed by a pointer or struct attribute).
+3.  BYTE is one byte long, DWORD is 4 BYTES, LONG is 4 bytes, WORD is 2 bytes.
+4.  A bmp file always starts with 0x4D 0x42.
+5.  biSize is constant - it is the size of the bi struct. bfSize differs across different images, as it is dependent on the bitmap size in pixels.
+6.  It means that the image starts from the lower right as opposed to upper left.
+7.  It is specified by biBitCount.
+8.  For infile - the file may not exist. For outfile - program may not be able to write to the disk.
+9.  So we read the file one pixel at a time - we have a size of 1 RGPTRIPLE and read 1 element of that size.
+10. The padding for width 3 (9bytes) should be 3 (12%9).
+11. It "skips" a chunk of data - moves read pointer certain ammount of bytes without actually reading the data.
+12. Offset to the current position for fseek function.
