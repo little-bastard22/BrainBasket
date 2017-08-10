@@ -14,9 +14,9 @@ int main(int argc, char *argv[])
     }
     
     int file_num = 0; //first file number
-    char *infile = argv[1];
-    char outfile[6];
-    unsigned char block[512];
+    char *infile = argv[1]; //file name for reading
+    char outfile[6]; //file name for writing
+    unsigned char block[512]; //
      
     //opens RAW file
     FILE *inptr = fopen(infile, "r");
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
         return 2;
     }
     
-    //prepares NULL pointer
+    //prepares NULL pointer for writing
     FILE *outptr = NULL;
     
     //reads raw data in 512 BYTE-sized blocks
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
         unsigned char block3 = block[3];
         
         //checks for JPEG file header
-        if ((block0 != 0xff) || (block1 != 0xd8) || (block2 != 0xff) || (block3 > 0xef || block3 < 0xe0))
+        if ((block0 != 0xff) || (block1 != 0xd8) || (block2 != 0xff) || (block3 > 0xef && block3 < 0xe0))
         {
             //writes if outfile ready for writing
             if (outptr != NULL)
@@ -64,9 +64,16 @@ int main(int argc, char *argv[])
             // prepares new file for writing
             sprintf(outfile, "%03d.jpg", file_num);
             outptr = fopen(outfile, "w");
-            fwrite(block, 1, 512, outptr);
-            printf("%s\n", outfile);
+            if (outptr == NULL)
+            {
+                fclose(inptr);
+                fclose(outptr);
+                return 3;
+            }
             
+            //writes the current block of code
+            fwrite(block, 1, 512, outptr);
+
             //increment for next file
             file_num++;
         }
