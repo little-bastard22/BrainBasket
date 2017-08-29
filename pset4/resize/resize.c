@@ -59,7 +59,6 @@ int main(int argc, char *argv[])
     }
     
     //ensure factor is between 0 and 100
-    
     if (factor < 0 || factor > 100)
     {
         fclose(outptr);
@@ -69,7 +68,6 @@ int main(int argc, char *argv[])
     }
     
     int padding = (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
-    
     
     //initialize headers of the output file
     BITMAPFILEHEADER new_bf = bf;
@@ -95,9 +93,6 @@ int main(int argc, char *argv[])
     {
         ch_pad[i] = 0;
     }
-    
-    
-    
 
     // write outfile's BITMAPFILEHEADER
     fwrite(&new_bf, sizeof(BITMAPFILEHEADER), 1, outptr);
@@ -108,14 +103,15 @@ int main(int argc, char *argv[])
     //iterate on lines
     for (int i = 0; i < abs(bi.biHeight); i++)
     {
-        //initialize pointer control for current line
-        int ctr_ptr = 0;
+        
+        //control for current line
+        int ctr_ptr = 0; 
         
         //iterate on pixels in row
         for (int j = 0; j < bi.biWidth; j++)
         {
-            //read pixel
-            fread(&pixel, sizeof(RGBTRIPLE), 1, inptr);
+            
+            fread(&pixel, sizeof(RGBTRIPLE), 1, inptr); //read pixel
             
             //write pixel factor times to scanline
             for (int k = 0; k < factor; k++)
@@ -131,9 +127,8 @@ int main(int argc, char *argv[])
             fwrite(scanline, scanline_size, 1, outptr);
         }
 
-        
-        //skip padding for readfile
-        fseek(inptr, padding, SEEK_CUR);
+        //do not read padding
+        fseek(inptr, padding, SEEK_CUR); 
     }
     
     //free memory
