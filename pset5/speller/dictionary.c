@@ -25,6 +25,7 @@ char to_lower(char c)
     return c + diff;
 }
 
+
 int get_char_pos(char c)
 {
     int char_pos = 0;
@@ -34,14 +35,11 @@ int get_char_pos(char c)
     }
     else
     {
-        // if (isalpha(c))
+        if (c >= 65 && c <=90)
         {
-            if (c >= 65 && c <=90)
-            {
-                c = to_lower(c);
-            }
-            char_pos = c-97;
+            c = to_lower(c);
         }
+        char_pos = c-97;
     }
     return char_pos;
 }
@@ -89,7 +87,11 @@ void add_word(const char *word)
         if (add_ptr->entry_arr[char_pos] == NULL)
         {
             add_ptr->entry_arr[char_pos] = create_node();
+
+            //follow pointer at letter's index
             add_ptr = add_ptr->entry_arr[char_pos];
+
+            //load next letter
             word++;
             letter = *word;
             continue;
@@ -106,6 +108,34 @@ void add_word(const char *word)
     words_in_dict++; //nothing to see here, definitely not cheating!!!
 }
 
+/**
+ * Loads dictionary into memory. Returns true if successful else false.
+ */
+bool load(const char *dictionary)
+{
+    char buf[LENGTH+1] = { '\n' }; //empty buffer
+
+    //open dictionary file
+    FILE *dict_f_ptr = fopen(dictionary, "r");
+
+    //error check for dictionary
+    if (dict_f_ptr == NULL)
+    {
+        fclose(dict_f_ptr);
+        return false;
+    }
+
+    // loads line to buffer and adds to dictionary
+    while ((fgets(buf, LENGTH+2, dict_f_ptr) != NULL))
+    {
+        add_word(buf);
+    }
+
+    //close file
+    fclose(dict_f_ptr);
+    return true;
+
+}
 
 /**
  * Returns true if word is in dictionary else false.
@@ -136,86 +166,13 @@ bool check(const char *word)
         letter = *word;
     }
 
-    // checks whether the node is terminal
+    // checks if node is terminal
     if (check_ptr->is_word)
     {
         return true;
     }
 
     return false;
-}
-
-/**
- * Loads dictionary into memory. Returns true if successful else false.
- */
-bool load(const char *dictionary)
-{
-    char c;
-    int buf_ctr = 0; //access control for buffer
-    char buf[LENGTH+1] = { '\n' }; //empty buffer
-
-    // for (int i = 0; i<LENGTH+1; i++)
-    // {
-    //     buf[i] = '\n';
-    // }
-
-    //open dictionary file
-    FILE *dict_f_ptr = fopen(dictionary, "r");
-
-    //error check for dictionary
-    if (dict_f_ptr == NULL)
-    {
-        fclose(dict_f_ptr);
-        return false;
-    }
-
-    //iterate the file until EOF
-    while ((c = fgetc(dict_f_ptr)) != EOF)
-    {
-        //for lines longer than 45 letters
-        if (buf_ctr >= LENGTH)
-        {
-            //add 45 letters to the dictionary
-            add_word(buf);
-
-            // scrap the rest of the line (needs EOF, if only one word in dict)
-            while ((c = fgetc(dict_f_ptr)) != '\n' && c != '\0' && c != EOF);
-
-            //reset access and start at next line
-            buf_ctr = 0;
-            continue;
-        }
-
-        // not end of line (or file)
-        if (c != '\n' && c != '\0')
-        {
-            // add letter to buf
-            buf[buf_ctr] = c;
-        }
-
-        // end of line
-        else
-        {
-
-            //add terminator to the end of string
-            buf[buf_ctr] = '\0';
-
-            //add word to dictionary
-            add_word(buf);
-
-            // reset access
-            buf_ctr = 0;
-            continue;
-        }
-
-        //increment access
-        buf_ctr++;
-    }
-
-    //close file
-    fclose(dict_f_ptr);
-    return true;
-
 }
 
 /**
@@ -235,6 +192,10 @@ else goes deepah into the tree.
 
 bool clear_node (_entry * node)
 {
+    if (node == NULL)
+    {
+        return false;
+    }
     // check all pointers
     for (int i = 0; i < 26; i++)
     {

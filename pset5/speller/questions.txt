@@ -1,7 +1,23 @@
-0.  TODO
-1.  TODO
-2.  TODO
-3.  TODO
-4.  TODO
-5.  TODO
-6.  TODO
+0.  Pneumonoultramicroscopicsilicovolcanoconiosis is a 45 char long word (the upper limit of our word length.
+
+1.  getrusage() returns the current resource usage of a process.
+
+2.  struct rusage seems to have 16 (and possibly more) members.
+
+3. Passing before and after by values would create their copies on stack. These structs are fairly large, thus they
+could take up a lot of memory and possibly affect the result. By passing reference, we make the process quicker and
+not affecting our result.
+
+4.  With each iteration (starting from the first char in file), assigns the current letter (char c) a value read form the file
+pointer fp, until EOF is reached. In each loop, it checks whether the c is alpha character or an apostrophe, if true,
+adds that character to word array. If the number of characters hits LENGTH, it discards the rest of the alphabetical
+string. It also checs for digits, words with digits are discarded. After these checks are passed, we must have found a word and
+should check its spelling.
+
+5. We would need to iterate over the string again to discard the word with numerical characters.
+Also, discarding longer than LENGTH words would be much more complex, as we would need to check the index before
+adding the character to the word array (we easily cause segmentation fault).
+
+6. We need "one-way" or read only pointers. We probably didon't want to have the pointers changed on functions' runtime, i.e.
+changing the pointer reference of the checked word or dictionary to some other memory adress (which would really suck).
+
