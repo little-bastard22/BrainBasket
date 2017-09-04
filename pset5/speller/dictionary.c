@@ -3,19 +3,13 @@
  */
 
 #include <stdbool.h>
-
 #include <stdlib.h>
-
-#include <stdio.h> //temp
-
+#include <stdio.h>
 #include <ctype.h>
-
 #include "dictionary.h"
+#include <string.h>
 
-_entry zero_node = {
-    .is_word = false,
-    .entry_arr = { NULL }
-};
+_entry * zero_node = NULL;
 
 int words_in_dict = 0;
 
@@ -25,23 +19,37 @@ char to_lower(char c)
     return c + diff;
 }
 
+const int diff = 'a' - 'A' - 97;
 
 int get_char_pos(char c)
 {
-    int char_pos = 0;
-    if (c == '\'')
+    if (c >= 'a')
     {
-        char_pos = 25;
+        return c - 97;
+    }
+    else if (c >= 'A')
+    {
+        return c + diff;
     }
     else
     {
-        if (c >= 65 && c <=90)
-        {
-            c = to_lower(c);
-        }
-        char_pos = c-97;
+        return 25;
     }
-    return char_pos;
+
+    // int char_pos = 0;
+    // if (c == '\'')
+    // {
+    //     char_pos = 25;
+    // }
+    // else
+    // {
+    //     if (c <=90)
+    //     {
+    //         c = to_lower(c);
+    //     }
+    //     char_pos = c-97;
+    // }
+    // return char_pos;
 }
 
 
@@ -53,14 +61,8 @@ _entry * create_node()
     // allocates memmory for the node
     _entry * new_node = malloc(sizeof(_entry));
 
-    //initialize all pointers to NULL
-    for (int i = 0; i<26; i++)
-    {
-        new_node->entry_arr[i] = NULL;
-    }
-
-    //is not terminal node of a word
-    new_node->is_word = false;
+    // initializes to empty
+    memset((void*)new_node, sizeof(_entry), 0);
 
     //returns pointer to the new node
     return new_node;
@@ -75,10 +77,10 @@ void add_word(const char *word)
     int char_pos;
 
     //sets pointer to zero node
-    _entry * add_ptr = &zero_node;
+    _entry * add_ptr = zero_node;
 
     //iterates over word until end of word
-    while (letter != '\n' && letter != '\0')
+    while (letter != '\n' &&  letter != '\0')
     {
         //gets array index for the letter
         char_pos = get_char_pos(letter);
@@ -92,20 +94,20 @@ void add_word(const char *word)
             add_ptr = add_ptr->entry_arr[char_pos];
 
             //load next letter
-            word++;
+            ++word;
             letter = *word;
             continue;
         }
 
         //if the pointer already exists, it follows it
-        word++;
+        ++word;
         letter = *word;
         add_ptr = add_ptr->entry_arr[char_pos];
     }
 
     //sets the node as a terminal node of a word
     add_ptr->is_word = true;
-    words_in_dict++; //nothing to see here, definitely not cheating!!!
+    ++words_in_dict; //nothing to see here, definitely not cheating!!!
 }
 
 /**
@@ -113,6 +115,12 @@ void add_word(const char *word)
  */
 bool load(const char *dictionary)
 {
+    if (zero_node == NULL)
+    {
+        zero_node = malloc(sizeof(_entry));
+        memset(zero_node, sizeof(_entry), 0);
+    }
+
     char buf[LENGTH+1] = { '\n' }; //empty buffer
 
     //open dictionary file
@@ -146,7 +154,7 @@ bool check(const char *word)
     int char_pos;
 
     //sets pointer to zero node
-    _entry * check_ptr = &zero_node;
+    _entry * check_ptr = zero_node;
 
     //iterates over the word until ended
     while (letter != '\0')
@@ -162,7 +170,7 @@ bool check(const char *word)
 
         //if the pointer exists, follow it
         check_ptr = check_ptr->entry_arr[char_pos];
-        word++;
+        ++word;
         letter = *word;
     }
 
@@ -196,6 +204,7 @@ bool clear_node (_entry * node)
     {
         return false;
     }
+
     // check all pointers
     for (int i = 0; i < 26; i++)
     {
@@ -204,16 +213,17 @@ bool clear_node (_entry * node)
         {
             //dreaded recursion
             clear_node(node->entry_arr[i]);
+
             //after all children cleared, set pointer to NULL
             node->entry_arr[i] = NULL;
         }
     }
 
     // zero node is initialized beforehand, don't need and can't deallocate
-    if (node != &zero_node)
-    {
+    // if (node != &zero_node)
+    // {
         free(node);
-    }
+    // }
 
     return true;
 }
@@ -224,7 +234,8 @@ bool clear_node (_entry * node)
 bool unload(void)
 {
     //start clearing the node from the zero node
-    bool cleared = clear_node(&zero_node);
+    bool cleared = clear_node(zero_node);
+    zero_node = NULL;
 
     //inform about success
     return cleared;
